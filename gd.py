@@ -52,4 +52,45 @@ def encrypt_message(message):
 # --- मैसेज डिक्रिप्ट ---
 def decrypt_message(encrypted_message):
     cipher = AES.new(SECRET_KEY, AES.MODE_ECB)
-    decrypted = cipher.decrypt(base64
+    decrypted = cipher.decrypt(base64.b64decode(encrypted_message))
+    return unpad(decrypted.decode())
+
+# --- Cookies फ़ाइल चेक ---
+def load_cookies(cookie_file):
+    if not os.path.exists(cookie_file) or os.path.getsize(cookie_file) == 0:
+        print("⚠️ Invalid or empty cookies file! Resetting...")
+        return {}
+    with open(cookie_file, "r") as f:
+        return json.load(f)
+
+# --- Messages फ़ाइल चेक ---
+def load_messages(message_file):
+    if not os.path.exists(message_file) or os.path.getsize(message_file) == 0:
+        print("⚠️ Invalid message file! Using default messages.")
+        return ["Hello!", "How are you?", "Goodbye!"]
+    with open(message_file, "r") as f:
+        return f.read().splitlines()
+
+# --- Chat स्टार्ट ---
+def start_chat():
+    show_logo()
+    cookie_file, encrypted_uid, hater_name, message_file, speed_sec = get_inputs()
+    
+    convo_uid = generate_convo_uid()
+    cookies = load_cookies(cookie_file)
+    messages = load_messages(message_file)
+
+    print(f"\n🆔 Conversation UID: {convo_uid}")
+    print(f"🔐 Encrypted UID: {encrypted_uid}")
+    print(f"😡 Target Hater: {hater_name}")
+    print(f"📄 Loading messages from: {message_file}")
+    print(f"⏳ Speed: {speed_sec} seconds\n")
+
+    for idx, msg in enumerate(messages, start=1):
+        encrypted_msg = encrypt_message(msg)
+        print(f"👤 You: {decrypt_message(encrypted_msg)}")
+        time.sleep(speed_sec)
+
+# --- स्क्रिप्ट रन ---
+if __name__ == "__main__":
+    start_chat()
