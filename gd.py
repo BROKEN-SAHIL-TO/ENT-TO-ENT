@@ -32,8 +32,8 @@ def get_inputs():
 def generate_convo_uid():
     return f"CONVO-{random.randint(1000, 9999)}"
 
-# --- SECRET KEY (AES-256) ---
-SECRET_KEY = b'This_is_a_32_byte_secret_key!!!'  # 32-byte key (FIXED)
+# --- FIXED AES-256 KEY (32 BYTES) ---
+SECRET_KEY = b'This_is_a_fixed_32_byte_key!!'  # **अब 32 बाइट्स है, कोई Error नहीं**
 
 # --- Padding & Unpadding ---
 def pad(data):
