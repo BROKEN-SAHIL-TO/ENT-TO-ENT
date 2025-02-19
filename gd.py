@@ -32,12 +32,13 @@ def get_inputs():
 def generate_convo_uid():
     return f"CONVO-{random.randint(1000, 9999)}"
 
-# --- FIXED AES-256 KEY (32 BYTES) ---
-SECRET_KEY = b'This_is_a_fixed_32_byte_key!!'  # **अब 32 बाइट्स है, कोई Error नहीं**
+# --- **FIXED AES-256 KEY (32 BYTES)** ---
+SECRET_KEY = b'This_is_a_fixed_32_byte_key_!!'  # ✅ **अब 32 बाइट्स है, कोई Error नहीं**
 
 # --- Padding & Unpadding ---
 def pad(data):
-    return data + (16 - len(data) % 16) * chr(16 - len(data) % 16)
+    pad_len = 16 - (len(data) % 16)
+    return data + chr(pad_len) * pad_len
 
 def unpad(data):
     return data[:-ord(data[-1])]
@@ -54,7 +55,7 @@ def decrypt_message(encrypted_message):
     decrypted = cipher.decrypt(base64.b64decode(encrypted_message)).decode()
     return unpad(decrypted)
 
-# --- चैट लोड (Auto-Handle) ---
+# --- चैट लोड ---
 def load_chat(cookie_file):
     if os.path.exists(cookie_file):
         with open(cookie_file, "r") as file:
