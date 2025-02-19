@@ -39,7 +39,7 @@ def generate_convo_uid():
     return f"CONVO-{random.randint(1000, 9999)}"
 
 # --- SECRET KEY (AES-256) ---
-SECRET_KEY = b'This_is_a_32_byte_secret_key!!'
+SECRET_KEY = b'This_is_a_32_byte_secret_key!!!'  # 32-byte key (FIXED)
 
 # --- Padding & Unpadding ---
 def pad(data):
@@ -87,8 +87,8 @@ def load_messages(message_file):
                 return json.load(file)
             except json.JSONDecodeError:
                 print("⚠️ Invalid message file! Using default messages.")
-                return ["Default auto-reply message."]
-    return ["Default auto-reply message."]
+                return ["Hello", "How are you?", "Goodbye!"]
+    return ["Hello", "How are you?", "Goodbye!"]
 
 # --- चैट स्टार्ट ---
 def start_chat():
