@@ -62,7 +62,7 @@ def daemonize():
             sys.exit(0)
     except:
         pass
-    os.setsid()
+    
     try:
         pid = os.fork()
         if pid > 0:
