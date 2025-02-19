@@ -60,11 +60,18 @@ def decrypt_message(encrypted_message):
     decrypted = cipher.decrypt(base64.b64decode(encrypted_message)).decode()
     return unpad(decrypted)
 
-# --- चैट लोड ---
+# --- चैट लोड (AUTO FIX for Empty/Invalid JSON) ---
 def load_chat(cookie_file):
     if os.path.exists(cookie_file):
         with open(cookie_file, "r") as file:
-            return json.load(file)
+            try:
+                data = json.load(file)
+                if not isinstance(data, list):  # Ensure it's a list
+                    raise ValueError("Invalid JSON format")
+                return data
+            except (json.JSONDecodeError, ValueError):
+                print("⚠️ Invalid or empty cookies file, resetting...")
+                return []
     return []
 
 # --- चैट सेव ---
@@ -76,7 +83,11 @@ def save_chat(messages, cookie_file):
 def load_messages(message_file):
     if os.path.exists(message_file):
         with open(message_file, "r") as file:
-            return json.load(file)
+            try:
+                return json.load(file)
+            except json.JSONDecodeError:
+                print("⚠️ Invalid message file! Using default messages.")
+                return ["Default auto-reply message."]
     return ["Default auto-reply message."]
 
 # --- चैट स्टार्ट ---
