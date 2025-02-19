@@ -7,24 +7,36 @@ from Crypto.Cipher import AES
 
 # --- 🔥 STARTUP LOGO ---
 def show_logo():
+    os.system('clear')
     print("""
     ███████╗███╗   ██╗██████╗ ██╗███████╗
     ██╔════╝████╗  ██║██╔══██╗██║██╔════╝
     █████╗  ██╔██╗ ██║██████╔╝██║███████╗
     ██╔══╝  ██║╚██╗██║██╔═══╝ ██║╚════██║
     ███████╗██║ ╚████║██║     ██║███████║
-    ╚══════╝╚═╝  ╚═══╝╚═╝     ╚═╝╚══════╝
+    ╚══════╝╚═╝  ╚═══╝╚═╝     ╚══════╝
     """)
+    print("🔒 End-to-End Encrypted Chat Loader")
+    print("📂 Required Inputs:")
+    print("1️⃣ Cookies File")
+    print("2️⃣ Encrypted UID")
+    print("3️⃣ Hater Name")
+    print("4️⃣ Message File")
+    print("5️⃣ Speed Seconds\n")
 
-# --- कुकीज़ फाइल इनपुट ---
-COOKIE_FILE = input("🍪 कुकी फाइल का नाम दर्ज करें (default: chat_cookie.json): ") or "chat_cookie.json"
+# --- इनपुट ऑप्शंस ---
+def get_inputs():
+    cookie_file = input("🍪 Enter Cookies File Name: ") or "chat_cookie.json"
+    encrypted_uid = input("🔐 Enter Encrypted UID: ")
+    hater_name = input("😡 Enter Hater Name: ")
+    message_file = input("📄 Enter Message File Name: ") or "messages.json"
+    speed_sec = float(input("⏳ Enter Speed Seconds (default: 1.5s): ") or 1.5)
+
+    return cookie_file, encrypted_uid, hater_name, message_file, speed_sec
 
 # --- यूनिक कन्वो UID ---
-CONVO_UID = f"CONVO-{random.randint(1000, 9999)}"
-print(f"🆔 कन्वो UID: {CONVO_UID}")
-
-# --- स्पीड सेकंड ---
-SPEED_SEC = float(input("⏳ स्पीड सेकंड (default: 1.5s): ") or 1.5)
+def generate_convo_uid():
+    return f"CONVO-{random.randint(1000, 9999)}"
 
 # --- SECRET KEY (AES-256) ---
 SECRET_KEY = b'This_is_a_32_byte_secret_key!!'
@@ -49,44 +61,60 @@ def decrypt_message(encrypted_message):
     return unpad(decrypted)
 
 # --- चैट लोड ---
-def load_chat():
-    if os.path.exists(COOKIE_FILE):
-        with open(COOKIE_FILE, "r") as file:
+def load_chat(cookie_file):
+    if os.path.exists(cookie_file):
+        with open(cookie_file, "r") as file:
             return json.load(file)
     return []
 
 # --- चैट सेव ---
-def save_chat(messages):
-    with open(COOKIE_FILE, "w") as file:
+def save_chat(messages, cookie_file):
+    with open(cookie_file, "w") as file:
         json.dump(messages, file)
+
+# --- मैसेज लोड ---
+def load_messages(message_file):
+    if os.path.exists(message_file):
+        with open(message_file, "r") as file:
+            return json.load(file)
+    return ["Default auto-reply message."]
 
 # --- चैट स्टार्ट ---
 def start_chat():
     show_logo()
-    print(f"🔒 सुरक्षित ऑफलाइन कन्वर्सेशन ({CONVO_UID})\n")
     
-    messages = load_chat()
+    # --- इनपुट्स लें ---
+    cookie_file, encrypted_uid, hater_name, message_file, speed_sec = get_inputs()
     
+    print(f"\n🆔 Conversation UID: {generate_convo_uid()}")
+    print(f"🔐 Encrypted UID: {encrypted_uid}")
+    print(f"😡 Target Hater: {hater_name}")
+    print(f"📄 Loading messages from: {message_file}")
+    print(f"⏳ Speed: {speed_sec} seconds\n")
+
+    messages = load_chat(cookie_file)
+    auto_replies = load_messages(message_file)
+
     while True:
-        msg = input("👤 आप: ")
+        msg = input("👤 You: ")
         if msg.lower() == "exit":
             break
 
         encrypted_msg = encrypt_message(msg)
         messages.append(encrypted_msg)
-        save_chat(messages)
+        save_chat(messages, cookie_file)
 
-        print(f"🔐 एन्क्रिप्टेड मैसेज: {encrypted_msg}\n")
+        print(f"🔐 Encrypted Message: {encrypted_msg}\n")
 
-        # --- ऑटो रिप्लाई (स्पीड सेटिंग के साथ) ---
-        time.sleep(SPEED_SEC)
-        reply = "यह एक डिफॉल्ट एन्क्रिप्टेड उत्तर है।"
+        # --- ऑटो रिप्लाई ---
+        time.sleep(speed_sec)
+        reply = random.choice(auto_replies)
         encrypted_reply = encrypt_message(reply)
         messages.append(encrypted_reply)
-        save_chat(messages)
-        print(f"🤖 रिप्लाई: {reply} (🔐 {encrypted_reply})\n")
+        save_chat(messages, cookie_file)
+        print(f"🤖 Reply: {reply} (🔐 {encrypted_reply})\n")
 
-    print("\n🔓 डिक्रिप्टेड चैट हिस्ट्री:\n")
+    print("\n🔓 Decrypted Chat History:\n")
     for encrypted_msg in messages:
         print(f"💬 {decrypt_message(encrypted_msg)}")
 
