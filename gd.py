@@ -16,13 +16,7 @@ def show_logo():
     ███████╗██║ ╚████║██║     ██║███████║
     ╚══════╝╚═╝  ╚═══╝╚═╝     ╚══════╝
     """)
-    print("🔒 End-to-End Encrypted Chat Loader")
-    print("📂 Required Inputs:")
-    print("1️⃣ Cookies File")
-    print("2️⃣ Encrypted UID")
-    print("3️⃣ Hater Name")
-    print("4️⃣ Message File")
-    print("5️⃣ Speed Seconds\n")
+    print("🔒 End-to-End Encrypted Chat Loader\n")
 
 # --- इनपुट ऑप्शंस ---
 def get_inputs():
@@ -60,19 +54,17 @@ def decrypt_message(encrypted_message):
     decrypted = cipher.decrypt(base64.b64decode(encrypted_message)).decode()
     return unpad(decrypted)
 
-# --- चैट लोड (AUTO FIX for Empty/Invalid JSON) ---
+# --- चैट लोड (Auto-Handle) ---
 def load_chat(cookie_file):
     if os.path.exists(cookie_file):
         with open(cookie_file, "r") as file:
             try:
                 data = json.load(file)
-                if not isinstance(data, list):  # Ensure it's a list
-                    raise ValueError("Invalid JSON format")
-                return data
+                if isinstance(data, list):  
+                    return data
             except (json.JSONDecodeError, ValueError):
-                print("⚠️ Invalid or empty cookies file, resetting...")
-                return []
-    return []
+                pass
+    return []  # Default Empty List (NO Warning)
 
 # --- चैट सेव ---
 def save_chat(messages, cookie_file):
@@ -86,9 +78,8 @@ def load_messages(message_file):
             try:
                 return json.load(file)
             except json.JSONDecodeError:
-                print("⚠️ Invalid message file! Using default messages.")
-                return ["Hello", "How are you?", "Goodbye!"]
-    return ["Hello", "How are you?", "Goodbye!"]
+                pass
+    return ["Hello", "How are you?", "Goodbye!"]  # Default Messages (NO Warning)
 
 # --- चैट स्टार्ट ---
 def start_chat():
