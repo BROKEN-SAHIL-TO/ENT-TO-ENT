@@ -55,13 +55,18 @@ def decrypt_message(encrypted_message):
     decrypted = cipher.decrypt(base64.b64decode(encrypted_message))
     return unpad(decrypted.decode())
 
-# --- Cookies फ़ाइल चेक ---
+# --- Cookies फ़ाइल चेक (Fix Empty JSON File Issue) ---
 def load_cookies(cookie_file):
     if not os.path.exists(cookie_file) or os.path.getsize(cookie_file) == 0:
-        print("⚠️ Invalid or empty cookies file! Resetting...")
-        return {}
-    with open(cookie_file, "r") as f:
-        return json.load(f)
+        print(f"⚠️ Warning: {cookie_file} is empty or missing! Using default cookies.")
+        return {"session": "default_session"}  # डिफ़ॉल्ट कुकीज़
+    
+    try:
+        with open(cookie_file, "r") as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        print(f"❌ Error: {cookie_file} is not a valid JSON file! Resetting...")
+        return {"session": "default_session"}  # Reset JSON
 
 # --- Messages फ़ाइल चेक ---
 def load_messages(message_file):
