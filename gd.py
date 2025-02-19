@@ -4,9 +4,8 @@ import json
 import time
 import random
 from Crypto.Cipher import AES
-from Crypto.Random import get_random_bytes
 
-# --- 🔥 CHAT LODER LOGO ---
+# --- 🔥 STARTUP LOGO ---
 def show_logo():
     print("""
     ███████╗███╗   ██╗██████╗ ██╗███████╗
@@ -19,12 +18,6 @@ def show_logo():
 
 # --- कुकीज़ फाइल इनपुट ---
 COOKIE_FILE = input("🍪 कुकी फाइल का नाम दर्ज करें (default: chat_cookie.json): ") or "chat_cookie.json"
-
-# --- हेटर का नाम ---
-HATER_NAME = input("😈 हेटर का नाम दर्ज करें (default: Unknown): ") or "Unknown"
-
-# --- मैसेज फाइल इनपुट ---
-MESSAGE_FILE = input("📂 मैसेज फाइल का नाम दर्ज करें (default: messages.txt): ") or "messages.txt"
 
 # --- यूनिक कन्वो UID ---
 CONVO_UID = f"CONVO-{random.randint(1000, 9999)}"
@@ -67,20 +60,12 @@ def save_chat(messages):
     with open(COOKIE_FILE, "w") as file:
         json.dump(messages, file)
 
-# --- एक्सटर्नल मैसेज फाइल लोड ---
-def load_messages():
-    if os.path.exists(MESSAGE_FILE):
-        with open(MESSAGE_FILE, "r") as file:
-            return file.read().splitlines()
-    return ["Hello!", "How are you?", "This is a default message."]
-
 # --- चैट स्टार्ट ---
 def start_chat():
     show_logo()
-    print(f"🔒 सुरक्षित ऑफलाइन चैट ({HATER_NAME} के खिलाफ)")
+    print(f"🔒 सुरक्षित ऑफलाइन कन्वर्सेशन ({CONVO_UID})\n")
     
     messages = load_chat()
-    external_messages = load_messages()
     
     while True:
         msg = input("👤 आप: ")
@@ -95,11 +80,11 @@ def start_chat():
 
         # --- ऑटो रिप्लाई (स्पीड सेटिंग के साथ) ---
         time.sleep(SPEED_SEC)
-        reply = random.choice(external_messages)
+        reply = "यह एक डिफॉल्ट एन्क्रिप्टेड उत्तर है।"
         encrypted_reply = encrypt_message(reply)
         messages.append(encrypted_reply)
         save_chat(messages)
-        print(f"🤖 {HATER_NAME}: {reply} (🔐 {encrypted_reply})\n")
+        print(f"🤖 रिप्लाई: {reply} (🔐 {encrypted_reply})\n")
 
     print("\n🔓 डिक्रिप्टेड चैट हिस्ट्री:\n")
     for encrypted_msg in messages:
